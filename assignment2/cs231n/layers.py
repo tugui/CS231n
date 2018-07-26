@@ -183,7 +183,7 @@ def batchnorm_forward(x, gamma, beta, bn_param):
         out = tmp * gamma + beta
         running_mean = momentum * running_mean + (1 - momentum) * sample_mean
         running_var = momentum * running_var + (1 - momentum) * sample_var
-        
+
         cache = {}
         cache['x'] = x
         cache['tmp'] = tmp
@@ -239,14 +239,14 @@ def batchnorm_backward(dout, cache):
     N = dout.shape[0]
     dbeta = np.sum(dout, axis=0)
     dgamma = np.sum(cache['tmp'] * dout, axis=0)
-    
+
     d1 = 1 / np.sqrt(cache['var']) * cache['gamma'] * dout
     d2 = np.sum((cache['x'] - cache['mean']) * cache['gamma'] * dout, axis=0)
     d3 = -1 / cache['var'] * d2
     d4 = 1 / 2 / np.sqrt(cache['var']) * d3
     d5 = np.ones_like(dout) / N * d4
     d6 = 2 * (cache['x'] - cache['mean']) * d5
-    
+
     d7 = d1 + d6
     d8 = -np.sum(d7, axis=0)
     d9 = np.ones_like(dout) / N * d8
@@ -398,23 +398,23 @@ def conv_forward_naive(x, w, b, conv_param):
     ###########################################################################
     pad = conv_param['pad']
     stride = conv_param['stride']
-    
+
     filter_num = w.shape[0]
     filter_height = w.shape[2]
     filter_width = w.shape[3]
-    
+
     train_num = x.shape[0]
     channel_num = x.shape[1]
     feature_height = x.shape[2]
     feature_width = x.shape[3]
-    
+
     output_height = (feature_height + 2 * pad - filter_height) // stride + 1
     output_width = (feature_width + 2 * pad - filter_width) // stride + 1
-    
+
     ex = np.zeros((x.shape[0], x.shape[1], x.shape[2] + 2 * pad, x.shape[3] + 2 * pad))
     for t in range(train_num):
-            for c in range(channel_num):
-                ex[t, c, ...] = np.pad(x[t, c, ...], (pad, pad), 'constant', constant_values=(0, 0))
+        for c in range(channel_num):
+            ex[t, c, ...] = np.pad(x[t, c, ...], (pad, pad), 'constant', constant_values=(0, 0))
 
     out = np.zeros((train_num, filter_num, output_height, output_width))
     for n in range(filter_num):
@@ -449,23 +449,23 @@ def conv_backward_naive(dout, cache):
     x, w, b, conv_param = cache
     pad = conv_param['pad']
     stride = conv_param['stride']
-    
+
     filter_num = w.shape[0]
     filter_height = w.shape[2]
     filter_width = w.shape[3]
-    
+
     train_num = x.shape[0]
     channel_num = x.shape[1]
     feature_height = x.shape[2]
     feature_width = x.shape[3]
-    
+
     output_height = dout.shape[2]
     output_width = dout.shape[3]
-    
+
     db = np.sum(dout, axis = (0, 2, 3))
     dw = np.zeros_like(w)
     dx = np.zeros_like(x)
-    
+
     ex = np.zeros((x.shape[0], x.shape[1], x.shape[2] + 2 * pad, x.shape[3] + 2 * pad))
     for t in range(train_num):
             for c in range(channel_num):
@@ -509,12 +509,12 @@ def max_pool_forward_naive(x, pool_param):
     pool_height = pool_param['pool_height']
     pool_width = pool_param['pool_width']
     stride = pool_param['stride']
-    
+
     train_num = x.shape[0]
     channel_num = x.shape[1]
     feature_height = x.shape[2]
     feature_width = x.shape[3]
-    
+
     output_height = (feature_height - pool_height) // stride + 1
     output_width = (feature_width - pool_width) // stride + 1
 
@@ -550,12 +550,12 @@ def max_pool_backward_naive(dout, cache):
     pool_height = pool_param['pool_height']
     pool_width = pool_param['pool_width']
     stride = pool_param['stride']
-    
+
     train_num = x.shape[0]
     channel_num = x.shape[1]
     feature_height = x.shape[2]
     feature_width = x.shape[3]
-    
+
     output_height = dout.shape[2]
     output_width = dout.shape[3]
 
@@ -603,7 +603,7 @@ def spatial_batchnorm_forward(x, gamma, beta, bn_param):
     # be very short; ours is less than five lines.                            #
     ###########################################################################
     N, C, H, W = x.shape
-    x_flat = x.transpose(0, 2, 3, 1).reshape(-1, C)    
+    x_flat = x.transpose(0, 2, 3, 1).reshape(-1, C)
     out_flat, cache = batchnorm_forward(x_flat, gamma, beta, bn_param)
     out = out_flat.reshape(N, H, W, C).transpose(0, 3, 1, 2)
     ###########################################################################
